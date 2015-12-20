@@ -29,7 +29,7 @@ from webkit2png import WebkitRenderer
 import sys
 import signal
 import os
-import urlparse
+import urllib.parse
 import logging
 from optparse import OptionParser
 
@@ -162,7 +162,7 @@ def main():
     if options.output is None:
         options.output = sys.stdout
     else:
-        options.output = open(options.output, "w")
+        options.output = open(options.output, "bw")
 
     logger.debug("Version %s, Python %s, Qt %s", VERSION, sys.version, qVersion());
 
@@ -203,9 +203,9 @@ def main():
             renderer.render_to_file(res=options.url, file_object=options.output)
             options.output.close()
             QApplication.exit(0)
-        except RuntimeError, e:
+        except (RuntimeError, e):
             logger.error("main: %s" % e)
-            print >> sys.stderr, e
+            print(sys.stderr, e)
             QApplication.exit(1)
 
     # Initialize Qt-Application, but make this script

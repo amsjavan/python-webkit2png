@@ -1,4 +1,4 @@
-**webkit2png** 
+**python3 webkit2png** 
 ==============
 
 About
@@ -20,7 +20,7 @@ Manual installation via Git
 -----------------------------
 - Install git: ``apt-get install git-core``
 - Create directory: ``mkdir python-webkit2png``
-- Clone the project: ``git clone https://github.com/adamn/python-webkit2png.git python-webkit2png``
+- Clone the project: ``git clone https://github.com/amsjavan/python-webkit2png.git python3-webkit2png``
 - Install with: ``python python-webkit2png/setup.py install``
 
 FreeBSD
@@ -32,5 +32,10 @@ FreeBSD
 Usage
 =====
 - For help run: ``python scripts/webkit2png -h``
+
+Example
+=====
+python scripts.py file.html -o image.png
+
 
 ![Alt Text](http://24.media.tumblr.com/tumblr_m9trixXFHn1rxlmf0o1_400.gif)

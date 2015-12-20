@@ -31,6 +31,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtWebKit import *
 from PyQt4.QtNetwork import *
 
+
 # Class for Website-Rendering. Uses QWebPage, which
 # requires a running QtGui to work.
 class WebkitRenderer(QObject):
@@ -42,7 +43,8 @@ class WebkitRenderer(QObject):
     resulting image as 'str' object or render_to_file() to write the image
     directly into a 'file' resource.
     """
-    def __init__(self,**kwargs):
+
+    def __init__(self, **kwargs):
         """
         Sets default values for the properties.
         """
@@ -61,7 +63,7 @@ class WebkitRenderer(QObject):
         self.scaleRatio = kwargs.get('scaleRatio', 'keep')
         self.format = kwargs.get('format', 'png')
         self.logger = kwargs.get('logger', None)
-        
+
         # Set this to true if you want to capture flash.
         # Not that your desktop must be large enough for
         # fitting the whole window.
@@ -76,12 +78,11 @@ class WebkitRenderer(QObject):
 
         # Set some default options for QWebPage
         self.qWebSettings = {
-            QWebSettings.JavascriptEnabled : False,
-            QWebSettings.PluginsEnabled : False,
-            QWebSettings.PrivateBrowsingEnabled : True,
-            QWebSettings.JavascriptCanOpenWindows : False
+            QWebSettings.JavascriptEnabled: False,
+            QWebSettings.PluginsEnabled: False,
+            QWebSettings.PrivateBrowsingEnabled: True,
+            QWebSettings.JavascriptCanOpenWindows: False
         }
-
 
     def render(self, res):
         """
@@ -91,7 +92,7 @@ class WebkitRenderer(QObject):
         # QApplication.processEvents may be called, causing
         # this method to get called while it has not returned yet.
         helper = _WebkitRendererHelper(self)
-        helper._window.resize( self.width, self.height )
+        helper._window.resize(self.width, self.height)
         image = helper.render(res)
 
         # Bind helper instance to this image to prevent the
@@ -106,7 +107,7 @@ class WebkitRenderer(QObject):
         Renders the image into a File resource.
         Returns the size of the data that has been written.
         """
-        format = self.format # this may not be constant due to processEvents()
+        format = self.format  # this may not be constant due to processEvents()
         image = self.render(res)
         qBuffer = QBuffer()
         image.save(qBuffer, format)
@@ -115,24 +116,26 @@ class WebkitRenderer(QObject):
 
     def render_to_bytes(self, res):
         """Renders the image into an object of type 'str'"""
-        format = self.format # this may not be constant due to processEvents()
+        format = self.format  # this may not be constant due to processEvents()
         image = self.render(res)
         qBuffer = QBuffer()
         image.save(qBuffer, format)
         return qBuffer.buffer().data()
 
+
 ## @brief The CookieJar class inherits QNetworkCookieJar to make a couple of functions public.
 class CookieJar(QNetworkCookieJar):
-	def __init__(self, cookies, qtUrl, parent=None):
-		QNetworkCookieJar.__init__(self, parent)
-		for cookie in cookies:
-			QNetworkCookieJar.setCookiesFromUrl(self, QNetworkCookie.parseCookies(QByteArray(cookie)), qtUrl)
+    def __init__(self, cookies, qtUrl, parent=None):
+        QNetworkCookieJar.__init__(self, parent)
+        for cookie in cookies:
+            QNetworkCookieJar.setCookiesFromUrl(self, QNetworkCookie.parseCookies(QByteArray(cookie)), qtUrl)
 
-	def allCookies(self):
-		return QNetworkCookieJar.allCookies(self)
-	
-	def setAllCookies(self, cookieList):
-		QNetworkCookieJar.setAllCookies(self, cookieList)
+    def allCookies(self):
+        return QNetworkCookieJar.allCookies(self)
+
+    def setAllCookies(self, cookieList):
+        QNetworkCookieJar.setAllCookies(self, cookieList)
+
 
 class _WebkitRendererHelper(QObject):
     """
@@ -150,8 +153,8 @@ class _WebkitRendererHelper(QObject):
         QObject.__init__(self)
 
         # Copy properties from parent
-        for key,value in parent.__dict__.items():
-            setattr(self,key,value)
+        for key, value in parent.__dict__.items():
+            setattr(self, key, value)
 
         # Determine Proxy settings
         proxy = QNetworkProxy(QNetworkProxy.NoProxy)
@@ -163,17 +166,17 @@ class _WebkitRendererHelper(QObject):
                 protocol = QNetworkProxy.Socks5Proxy
 
             proxy = QNetworkProxy(
-                protocol,
-                proxy_url.host(),
-                proxy_url.port(),
-                proxy_url.userName(),
-                proxy_url.password()
+                    protocol,
+                    proxy_url.host(),
+                    proxy_url.port(),
+                    proxy_url.userName(),
+                    proxy_url.password()
             )
 
         # Create and connect required PyQt4 objects
         self._page = CustomWebPage(logger=self.logger, ignore_alert=self.ignoreAlert,
-            ignore_confirm=self.ignoreConfirm, ignore_prompt=self.ignorePrompt,
-            interrupt_js=self.interruptJavaScript)
+                                   ignore_confirm=self.ignoreConfirm, ignore_prompt=self.ignorePrompt,
+                                   interrupt_js=self.interruptJavaScript)
         self._page.networkAccessManager().setProxy(proxy)
         self._view = QWebView()
         self._view.setPage(self._page)
@@ -181,13 +184,14 @@ class _WebkitRendererHelper(QObject):
         self._window.setCentralWidget(self._view)
 
         # Import QWebSettings
-        for key, value in self.qWebSettings.iteritems():
+        for key, value in self.qWebSettings.items():
             self._page.settings().setAttribute(key, value)
 
         # Connect required event listeners
         self.connect(self._page, SIGNAL("loadFinished(bool)"), self._on_load_finished)
         self.connect(self._page, SIGNAL("loadStarted()"), self._on_load_started)
-        self.connect(self._page.networkAccessManager(), SIGNAL("sslErrors(QNetworkReply *,const QList<QSslError>&)"), self._on_ssl_errors)
+        self.connect(self._page.networkAccessManager(), SIGNAL("sslErrors(QNetworkReply *,const QList<QSslError>&)"),
+                     self._on_ssl_errors)
         self.connect(self._page.networkAccessManager(), SIGNAL("finished(QNetworkReply *)"), self._on_each_reply)
 
         # The way we will use this, it seems to be unesseccary to have Scrollbars enabled
@@ -229,7 +233,7 @@ class _WebkitRendererHelper(QObject):
         if self.renderTransparentBackground:
             # Another possible drawing solution
             image = QImage(self._page.viewportSize(), QImage.Format_ARGB32)
-            image.fill(QColor(255,0,0,0).rgba())
+            image.fill(QColor(255, 0, 0, 0).rgba())
 
             # http://ariya.blogspot.com/2009/04/transparent-qwebview-and-qwebpage.html
             palette = self._view.palette()
@@ -263,7 +267,7 @@ class _WebkitRendererHelper(QObject):
         # "loadFinished(bool)" raised.
         cancelAt = time.time() + timeout
         self.__loading = True
-        self.__loadingResult = False # Default
+        self.__loadingResult = False  # Default
 
         # When "res" is of type tuple, it has two elements where the first
         # element is the HTML code to render and the second element is a string
@@ -286,7 +290,7 @@ class _WebkitRendererHelper(QObject):
 
         # Load the page
         if type(res) == tuple:
-            self._page.mainFrame().setHtml(res[0], qtUrl) # HTML, baseUrl
+            self._page.mainFrame().setHtml(res[0], qtUrl)  # HTML, baseUrl
         else:
             self._page.mainFrame().load(qtUrl)
 
@@ -323,18 +327,18 @@ class _WebkitRendererHelper(QObject):
                 ratio = Qt.KeepAspectRatio
             elif self.scaleRatio in ['expand', 'crop']:
                 ratio = Qt.KeepAspectRatioByExpanding
-            else: # 'ignore'
+            else:  # 'ignore'
                 ratio = Qt.IgnoreAspectRatio
             qImage = qImage.scaled(self.scaleToWidth, self.scaleToHeight, ratio, Qt.SmoothTransformation)
             if self.scaleRatio == 'crop':
                 qImage = qImage.copy(0, 0, self.scaleToWidth, self.scaleToHeight)
         return qImage
 
-    def _on_each_reply(self,reply):
-      """
-      Logs each requested uri
-      """
-      self.logger.debug("Received %s" % (reply.url().toString()))
+    def _on_each_reply(self, reply):
+        """
+        Logs each requested uri
+        """
+        self.logger.debug("Received %s" % (reply.url().toString()))
 
     # Eventhandler for "loadStarted()" signal
     def _on_load_started(self):
@@ -365,9 +369,9 @@ class _WebkitRendererHelper(QObject):
 
 class CustomWebPage(QWebPage):
     def __init__(self, **kwargs):
-    	"""
-    	Class Initializer
-    	"""
+        """
+        Class Initializer
+        """
         super(CustomWebPage, self).__init__()
         self.logger = kwargs.get('logger', None)
         self.ignore_alert = kwargs.get('ignore_alert', True)
