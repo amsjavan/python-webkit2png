@@ -31,6 +31,7 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+.idea
 
 # Dev files
 envdev*

@@ -34,6 +34,8 @@ from PyQt4.QtNetwork import *
 
 # Class for Website-Rendering. Uses QWebPage, which
 # requires a running QtGui to work.
+
+
 class WebkitRenderer(QObject):
     """
     A class that helps to create 'screenshots' of webpages using
@@ -68,7 +70,7 @@ class WebkitRenderer(QObject):
         # Not that your desktop must be large enough for
         # fitting the whole window.
         self.grabWholeWindow = kwargs.get('grabWholeWindow', False)
-        self.renderTransparentBackground = kwargs.get('renderTransparentBackground', False)
+        self.renderTransparentBackground = kwargs.get('renderTransparentBackground', True)
         self.ignoreAlert = kwargs.get('ignoreAlert', True)
         self.ignoreConfirm = kwargs.get('ignoreConfirm', True)
         self.ignorePrompt = kwargs.get('ignorePrompt', True)

@@ -155,7 +155,7 @@ def main():
             os.execvp(newArgs[0],newArgs[1:])
         except OSError:
             logger.error("Unable to find '%s'" % newArgs[0])
-            print >> sys.stderr, "Error - Unable to find '%s' for -x/--xvfb option" % newArgs[0]
+            print(sys.stderr, "Error - Unable to find '%s' for -x/--xvfb option" % newArgs[0])
             sys.exit(1)
 
     # Prepare output ("1" means STDOUT)
@@ -203,7 +203,7 @@ def main():
             renderer.render_to_file(res=options.url, file_object=options.output)
             options.output.close()
             QApplication.exit(0)
-        except (RuntimeError, e):
+        except RuntimeError as e:
             logger.error("main: %s" % e)
             print(sys.stderr, e)
             QApplication.exit(1)

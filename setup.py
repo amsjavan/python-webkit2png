@@ -10,7 +10,7 @@ long_description = description
 setup(
     name = "webkit2png",
     version = version,
-    url = 'http://github.com/AdamN/python-webkit2png',
+    url = 'http://github.com/amsjavan/python-webkit2png',
     license = 'LGPL',
     description = description,
     long_description = long_description,
